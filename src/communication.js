@@ -1,3 +1,4 @@
+const ON_DEATH = require("death");
 const zerorpc = require("zerorpc");
 const path = require("path");
 const { spawn } = require("child_process");
@@ -36,7 +37,7 @@ function connectServer(port = DEFAULT_PORT) {
     zerorpcClient.connect(`tcp://127.0.0.1:${port}`);
 
     zerorpcClient.invoke("handshake", (error, res, more) => {
-      console.log("here", res, error);
+      // console.log("here", res, error);
       if (!error && res === true) {
         console.log("Connected", res);
         resolve(zerorpcClient);
@@ -82,7 +83,13 @@ function on(evt, cb) {
 }
 
 function cleanup() {
-  spawnedChild.kill();
+  console.log(!!spawnedChild);
+
+  if (spawnedChild) {
+    spawnedChild.kill();
+  }
 }
+
+ON_DEATH(cleanup);
 
 module.exports = { on, off, send, connect, cleanup };
